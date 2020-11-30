@@ -14,8 +14,28 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi'/*, 'x86'*///, 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    allprojects {
+        repositories {
+            google()
 
+            // If you're using a version of Gradle lower than 4.1, you must
+            // instead use:
+            //
+            maven {
+                 url 'https://maven.google.com'
+             }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -33,7 +53,18 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation files('libs/XmDownload_2.0.jar')
+    implementation files('libs/XmlyOAuth2SDK_V2.0.jar')
+    implementation files('libs/TingPhoneOpenSDK_7.4.1.jar')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    // SDK在解析请求返回的JSON数据时用到
+    api 'com.google.code.gson:gson:2.8.1'
+    // SDK联网框架使用okhttp
+    api 'com.squareup.okhttp3:okhttp:3.11.0'
+    // SDK联网框架使用okhttp
+    api 'com.squareup.okio:okio:1.15.0'
+    // v4包
+    implementation 'com.android.support:support-v4:28.0.0'
 }
