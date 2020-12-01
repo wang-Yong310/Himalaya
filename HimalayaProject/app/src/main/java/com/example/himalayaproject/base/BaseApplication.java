@@ -2,6 +2,7 @@ package com.example.himalayaproject.base;
 
 import android.app.Application;
 
+import com.example.himalayaproject.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 
@@ -16,5 +17,8 @@ public class BaseApplication extends Application {
             mXimalaya.setPackid("com.example.himalayaproject");
             mXimalaya.init(this, appSecret);
         }
+        //初始化LogUtils
+        LogUtil.init(this.getPackageName(), false);
     }
+
 }
