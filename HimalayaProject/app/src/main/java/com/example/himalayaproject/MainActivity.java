@@ -33,6 +33,9 @@ public class MainActivity extends FragmentActivity {
         initEven();
     }
 
+    /**
+     * 初始化滑动
+     */
     private void initEven() {
         mIndicatorAdapter.setOnIndicatorTapClickListener(new IndicatorAdapter.OnIndicatorTapClickLister() {
             @Override

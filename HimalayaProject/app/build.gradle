@@ -56,6 +56,8 @@ dependencies {
     implementation files('libs/XmlyOAuth2SDK_V2.0.jar')
     implementation files('libs/TingPhoneOpenSDK_7.4.1.jar')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha06'
+    implementation 'com.squareup.picasso:picasso:2.3.2'
     testImplementation 'junit:junit:4.+'
     implementation 'com.github.hackware1993:MagicIndicator:1.6.0' // for support lib
     implementation 'com.github.hackware1993:MagicIndicator:1.7.0' // for androidx
