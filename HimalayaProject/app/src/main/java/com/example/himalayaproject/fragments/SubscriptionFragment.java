@@ -9,6 +9,7 @@ import com.example.himalayaproject.base.BaseFragment;
 
 public class SubscriptionFragment extends BaseFragment {
 
+
     private View mRootView;
 
     @Override

@@ -1,12 +1,17 @@
 package com.example.himalayaproject.base;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.example.himalayaproject.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
 
+
 public class BaseApplication extends Application {
+    private static Handler sHandler = null;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -19,6 +24,11 @@ public class BaseApplication extends Application {
         }
         //初始化LogUtils
         LogUtil.init(this.getPackageName(), false);
-    }
 
+        sHandler = new Handler(Looper.myLooper());
+
+    }
+    public static Handler getHandler(){
+        return sHandler;
+    }
 }

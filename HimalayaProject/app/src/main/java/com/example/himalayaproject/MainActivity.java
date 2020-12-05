@@ -29,6 +29,10 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        //隐藏标题栏
+//        ActionBar actionBar = getSupportActionBar();
+//        //ActionBar actionBar = getActionBar();
+//        actionBar.hide();
         initView();
         initEven();
     }

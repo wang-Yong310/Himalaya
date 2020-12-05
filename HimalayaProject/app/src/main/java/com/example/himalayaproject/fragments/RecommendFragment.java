@@ -4,7 +4,6 @@ import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,19 +15,12 @@ import com.example.himalayaproject.base.BaseFragment;
 import com.example.himalayaproject.interfaces.IRecommendViewCallback;
 import com.example.himalayaproject.presentes.RecommendPresenter;
 import com.example.himalayaproject.utils.LogUtil;
-import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
-import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
-import com.ximalaya.ting.android.opensdk.datatrasfer.IDataCallBack;
+import com.example.himalayaproject.views.UILoader;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
-import com.ximalaya.ting.android.opensdk.model.album.GussLikeAlbumList;
 
 import net.lucode.hackware.magicindicator.buildins.UIUtil;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.example.himalayaproject.utils.Constants.RECOMMEND_CONT;
 
 
 public class RecommendFragment extends BaseFragment implements IRecommendViewCallback {
@@ -37,12 +29,45 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
     private RecyclerView mRecyclerView;
     private RecommendListAdapter mRecommendListAdapter;
     private RecommendPresenter mRecommendPresenter;
+    private UILoader mUiLoader;
 
     @Override
     protected View onSubViewLoaded(LayoutInflater layoutInflater, ViewGroup container) {
-        //view加载完成
-        mRootView = layoutInflater.inflate(R.layout.fragment_recommend, container, false);
+        if (mRootView == null) {
+            mUiLoader = new UILoader(getContext()) {
+                @Override
+                protected View getSuccessView(ViewGroup container) {
+                    LogUtil.d(TAG,"getSuccessView 执行了");
+                    return createSuccessView(layoutInflater,container);
+                }
+            };
+        }
 
+        //3. 设置适配器
+        mRecommendListAdapter = new RecommendListAdapter();
+        mRecyclerView.setAdapter(mRecommendListAdapter);
+
+        //去拿数据
+        //  getRecommendData();
+
+        //获取到逻辑层的对象
+        mRecommendPresenter = RecommendPresenter.getInstance();
+        //先要设置通知接口的注册
+        mRecommendPresenter.registerViewCallBack(this);
+        //获取推荐列表
+        mRecommendPresenter.getRecommendList();
+
+        if (mUiLoader.getParent() instanceof ViewGroup) {
+            ((ViewGroup) mUiLoader.getParent()).removeView(mUiLoader);
+        }
+
+        //返回view，给界面显示
+        return mRootView;
+    }
+
+    private View createSuccessView(LayoutInflater layoutInflater, ViewGroup container) {
+        mRootView = layoutInflater.inflate(R.layout.fragment_recommend, container, false);
+        LogUtil.d(TAG, "" + mRootView);
         //RecycleView的使用
         //1. 第一步找到相应的控件
         mRecyclerView = mRootView.findViewById(R.id.recommend_list);
@@ -61,23 +86,6 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
                 outRect.right = UIUtil.dip2px(view.getContext(), 5);
             }
         });
-
-        //3. 设置适配器
-        mRecommendListAdapter = new RecommendListAdapter();
-        mRecyclerView.setAdapter(mRecommendListAdapter);
-
-        //去拿数据
-        //  getRecommendData();
-
-
-        //获取到逻辑层的对象
-        mRecommendPresenter = RecommendPresenter.getInstance();
-        //先要设置通知接口的注册
-        mRecommendPresenter.registerViewCallBack(this);
-        //获取推荐列表
-        mRecommendPresenter.getRecommendList();
-
-        //返回view，给界面显示
         return mRootView;
     }
 
@@ -85,6 +93,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
     /**
      * 获取推荐内容
      * 这个接口3.10.6
+     *
      * @param result
      */
     @Override
@@ -93,17 +102,23 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         //数据回来，就更新UI
         //把数据谁个i适配去，并更新UI
         mRecommendListAdapter.setDate(result);
-
+        mUiLoader.updateStatus(UILoader.UIStatus.SUCCESS);
     }
 
     @Override
-    public void onLoadMore(List<Album> result) {
-
+    public void onNetWorkError() {
+        mUiLoader.updateStatus(UILoader.UIStatus.NETWORK_ERROR);
     }
 
     @Override
-    public void onRefreshMore(List<Album> result) {
+    public void onEmpty() {
+        mUiLoader.updateStatus(UILoader.UIStatus.EMPTY);
+    }
 
+    @Override
+    public void onLoading() {
+        LogUtil.d(TAG, "onLoading");
+        mUiLoader.updateStatus(UILoader.UIStatus.LOADING);
     }
 
     @Override
