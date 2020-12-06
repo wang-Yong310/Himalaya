@@ -114,6 +114,10 @@ public class RecommendPresenter implements IRecommendPresenter {
 
     }
 
+    /**
+     * 使用集合回调接口的好处：通知多个地方
+     * @param callback
+     */
     @Override
     public void registerViewCallBack(IRecommendViewCallback callback) {
         if (!mCallbacks.contains(callback) && mCallbacks != null) {

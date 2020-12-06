@@ -33,7 +33,8 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
 
     @Override
     protected View onSubViewLoaded(LayoutInflater layoutInflater, ViewGroup container) {
-        if (mRootView == null) {
+
+        if (mUiLoader == null) {
             mUiLoader = new UILoader(getContext()) {
                 @Override
                 protected View getSuccessView(ViewGroup container) {
@@ -42,17 +43,12 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
                 }
             };
         }
-
-        //3. 设置适配器
-        mRecommendListAdapter = new RecommendListAdapter();
-        mRecyclerView.setAdapter(mRecommendListAdapter);
-
         //去拿数据
         //  getRecommendData();
 
         //获取到逻辑层的对象
         mRecommendPresenter = RecommendPresenter.getInstance();
-        //先要设置通知接口的注册
+        //先要设置通知接口的注册  || 类似于后台开发的回调地址
         mRecommendPresenter.registerViewCallBack(this);
         //获取推荐列表
         mRecommendPresenter.getRecommendList();
@@ -62,7 +58,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         }
 
         //返回view，给界面显示
-        return mRootView;
+        return mUiLoader;
     }
 
     private View createSuccessView(LayoutInflater layoutInflater, ViewGroup container) {
@@ -86,6 +82,9 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
                 outRect.right = UIUtil.dip2px(view.getContext(), 5);
             }
         });
+        //3. 设置适配器
+        mRecommendListAdapter = new RecommendListAdapter();
+        mRecyclerView.setAdapter(mRecommendListAdapter);
         return mRootView;
     }
 
@@ -120,7 +119,6 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         LogUtil.d(TAG, "onLoading");
         mUiLoader.updateStatus(UILoader.UIStatus.LOADING);
     }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
