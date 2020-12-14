@@ -1,4 +1,4 @@
-package com.example.himalayaproject.interfaces;
+package com.example.himalayaproject.ui.home;
 
 import com.ximalaya.ting.android.opensdk.model.album.Album;
 

@@ -1,5 +1,6 @@
-package com.example.himalayaproject.fragments;
+package com.example.himalayaproject.ui.home;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.himalayaproject.ui.detail.DetailActivity;
 import com.example.himalayaproject.R;
 import com.example.himalayaproject.adapters.RecommendListAdapter;
 import com.example.himalayaproject.base.BaseFragment;
-import com.example.himalayaproject.interfaces.IRecommendViewCallback;
-import com.example.himalayaproject.presentes.RecommendPresenter;
+import com.example.himalayaproject.ui.detail.AlbumDetailPresenter;
 import com.example.himalayaproject.utils.LogUtil;
 import com.example.himalayaproject.views.UILoader;
 import com.ximalaya.ting.android.opensdk.model.album.Album;
@@ -23,7 +24,7 @@ import net.lucode.hackware.magicindicator.buildins.UIUtil;
 import java.util.List;
 
 
-public class RecommendFragment extends BaseFragment implements IRecommendViewCallback {
+public class RecommendFragment extends BaseFragment implements IRecommendViewCallback, RecommendListAdapter.OnRecommendItemClickListener,UILoader.OnRetryClickListener {
     private final static String TAG = "RecommendFragment";
     private View mRootView;
     private RecyclerView mRecyclerView;
@@ -33,7 +34,6 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
 
     @Override
     protected View onSubViewLoaded(LayoutInflater layoutInflater, ViewGroup container) {
-
         if (mUiLoader == null) {
             mUiLoader = new UILoader(getContext()) {
                 @Override
@@ -42,6 +42,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
                     return createSuccessView(layoutInflater,container);
                 }
             };
+            mUiLoader.setOnRetryClickListener(this);
         }
         //去拿数据
         //  getRecommendData();
@@ -49,7 +50,7 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         //获取到逻辑层的对象
         mRecommendPresenter = RecommendPresenter.getInstance();
         //先要设置通知接口的注册  || 类似于后台开发的回调地址
-        mRecommendPresenter.registerViewCallBack(this);
+        mRecommendPresenter.registerViewCallback(this);
         //获取推荐列表
         mRecommendPresenter.getRecommendList();
 
@@ -85,6 +86,8 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         //3. 设置适配器
         mRecommendListAdapter = new RecommendListAdapter();
         mRecyclerView.setAdapter(mRecommendListAdapter);
+        //设置被点击事件
+        mRecommendListAdapter.setOnRecommendItemClickListener(this);
         return mRootView;
     }
 
@@ -124,7 +127,30 @@ public class RecommendFragment extends BaseFragment implements IRecommendViewCal
         super.onDestroyView();
         //取消接口的注册
         if (mRecommendPresenter != null) {
-            mRecommendPresenter.unRegisterViewCallBack(this);
+            mRecommendPresenter.unRegisterViewCallback(this);
+        }
+    }
+
+    /**
+     * 当前这个类实现这个接口
+     * @param position
+     */
+    @Override
+    public void onItemClick(int position,Album album) {
+        AlbumDetailPresenter.getInstance().setTargetAlbum(album);
+        //根据位置拿到数据
+        //Item被点击了,跳转到详情界面
+        Intent intent = new Intent(getContext(), DetailActivity.class);
+        startActivity(intent);
+        //页面跳转至后绑定接口
+
+    }
+
+    @Override
+    public void onRetryClick() {
+        if (mRecommendPresenter!=null) {
+            //获取推荐列表
+            mRecommendPresenter.getRecommendList();
         }
     }
 }

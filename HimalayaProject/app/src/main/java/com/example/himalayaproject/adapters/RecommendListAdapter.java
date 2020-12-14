@@ -17,8 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdapter.InnerHolder> {
-
+    private final static String TAG = "RecommendListAdapter";
     private List<Album> mData = new ArrayList<>();
+    private OnRecommendItemClickListener mItemClickListener;
 
     /**
      * 这里找到View下一步封装数据
@@ -45,6 +46,15 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
     @Override
     public void onBindViewHolder(@NonNull InnerHolder holder, int position) {
         holder.itemView.setTag(position);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mItemClickListener!=null) {
+                    int clickPosition = (int) v.getTag();
+                    mItemClickListener.onItemClick(clickPosition, mData.get(clickPosition));
+                }
+            }
+        });
         holder.setData(mData.get(position));
 
     }
@@ -71,7 +81,7 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
         notifyDataSetChanged();
     }
 
-    public class InnerHolder extends RecyclerView.ViewHolder {
+    public static class InnerHolder extends RecyclerView.ViewHolder {
 
         public InnerHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,5 +112,12 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
             Picasso.with(itemView.getContext()).load(album.getCoverUrlLarge()).into(albumCoverIv);
 
         }
+    }
+
+    public void setOnRecommendItemClickListener(OnRecommendItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+    public interface  OnRecommendItemClickListener {
+        void onItemClick(int position, Album album);
     }
 }

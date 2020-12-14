@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:serviceandroid="http://schemas.android.com/apk/distribution"
     package="com.example.himalayaproject">
 
     <!--连接网络-->
@@ -14,6 +15,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!--target >=28 需要设置此权限 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
@@ -24,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.home.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +35,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.detail.DetailActivity">
+        </activity>
+        <activity android:name=".ui.player.PlayerActivity">
+
+        </activity>
+<!--       音乐播放器的服务-->
+        <service android:name="com.ximalaya.ting.android.opensdk.player.service.XmPlayerService"
+        android:process=":player"/>
     </application>
 
 </manifest>

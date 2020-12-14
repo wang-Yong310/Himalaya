@@ -1,7 +1,5 @@
-package com.example.himalayaproject.presentes;
+package com.example.himalayaproject.ui.home;
 
-import com.example.himalayaproject.interfaces.IRecommendPresenter;
-import com.example.himalayaproject.interfaces.IRecommendViewCallback;
 import com.example.himalayaproject.utils.LogUtil;
 import com.ximalaya.ting.android.opensdk.constants.DTransferConstants;
 import com.ximalaya.ting.android.opensdk.datatrasfer.CommonRequest;
@@ -14,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.himalayaproject.utils.Constants.RECOMMEND_CONT;
+import static com.example.himalayaproject.utils.Constants.CONT_RECOMMEND;
 
 public class RecommendPresenter implements IRecommendPresenter {
     private final static String TAG = "RecommendPresenter";
@@ -48,7 +46,7 @@ public class RecommendPresenter implements IRecommendPresenter {
         //封装参数  获取推荐内容
         Map<String, String> map = new HashMap<>();
         //这个参数表示一页数据返回多少条
-        map.put(DTransferConstants.LIKE_COUNT, String.valueOf(RECOMMEND_CONT));
+        map.put(DTransferConstants.LIKE_COUNT, String.valueOf(CONT_RECOMMEND));
         CommonRequest.getGuessLikeAlbum(map, new IDataCallBack<GussLikeAlbumList>() {
             @Override
             public void onSuccess(GussLikeAlbumList gussLikeAlbumList) {
@@ -118,18 +116,18 @@ public class RecommendPresenter implements IRecommendPresenter {
      * 使用集合回调接口的好处：通知多个地方
      * @param callback
      */
+
     @Override
-    public void registerViewCallBack(IRecommendViewCallback callback) {
+    public void registerViewCallback(IRecommendViewCallback callback) {
         if (!mCallbacks.contains(callback) && mCallbacks != null) {
             mCallbacks.add(callback);
         }
     }
 
     @Override
-    public void unRegisterViewCallBack(IRecommendViewCallback callback) {
+    public void unRegisterViewCallback(IRecommendViewCallback callback) {
         if (mCallbacks != null) {
             mCallbacks.remove(mCallbacks);
         }
     }
-
 }

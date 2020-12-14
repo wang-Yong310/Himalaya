@@ -2,7 +2,7 @@ package com.example.himalayaproject.utils;
 
 import com.example.himalayaproject.base.BaseFragment;
 import com.example.himalayaproject.fragments.HistoryFragment;
-import com.example.himalayaproject.fragments.RecommendFragment;
+import com.example.himalayaproject.ui.home.RecommendFragment;
 import com.example.himalayaproject.fragments.SubscriptionFragment;
 
 import java.util.HashMap;

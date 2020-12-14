@@ -1,4 +1,4 @@
-package com.example.himalayaproject;
+package com.example.himalayaproject.ui.home;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -7,6 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 
 
+import com.example.himalayaproject.R;
 import com.example.himalayaproject.adapters.IndicatorAdapter;
 import com.example.himalayaproject.adapters.MainContentAdapter;
 import com.example.himalayaproject.utils.LogUtil;
