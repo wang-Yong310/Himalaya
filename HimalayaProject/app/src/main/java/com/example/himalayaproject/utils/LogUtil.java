@@ -2,6 +2,8 @@ package com.example.himalayaproject.utils;
 
 import android.util.Log;
 
+import com.example.himalayaproject.BuildConfig;
+
 public class LogUtil {
     public static String sTAG = "LogUtil";
 

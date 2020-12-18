@@ -12,17 +12,16 @@
         android:layout_marginRight="20dp"
         android:ellipsize="end"
         android:gravity="center"
-        android:maxLines="1"
+        android:maxLines="2"
         android:text="这     是播放器界面"
         android:textSize="20sp" />
 
     <androidx.viewpager.widget.ViewPager
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/vp_pager_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/tv_player_title"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="100dp"
-        android:background="#4BA7D0" />
+        android:layout_marginBottom="100dp" />
 
     <LinearLayout
         android:gravity="center"
@@ -54,11 +53,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp"
-                android:max="100" />
+                android:layout_marginRight="50dp" />
 
             <TextView
-                android:id="@+id/tv_current_duraction"
+                android:id="@+id/tv_current_duration"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -79,28 +77,39 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:src="@mipmap/sort_descending_press"
+                android:id="@+id/iv_player_node_switch"
+                android:src="@drawable/selector_play_mode_list_order"
+                android:layout_width="0dp"
+                android:layout_height="25dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/iv_play_pre"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:src="@drawable/serlctor_play_pre" />
+
+            <ImageView
+                android:id="@+id/iv_play_or_pause"
+               android:src="@drawable/selector_play_or_pause"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/iv_play_next"
+                android:src="@drawable/serlctor_play_next"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_weight="1" />
 
             <ImageView
-                android:src="@mipmap/previous_normal"
+                android:id="@+id/iv_play_list"
                 android:layout_width="0dp"
-                android:layout_height="20dp"
-                android:layout_weight="1" />
-
-            <ImageView
-               android:src="@mipmap/play_normal"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:src="@mipmap/next_normal"
-                android:layout_width="0dp"
-                android:layout_height="20dp"
-                android:layout_weight="1" />
+                android:layout_height="25dp"
+                android:layout_weight="1"
+                android:src="@drawable/selector_play_list" />
         </LinearLayout>
 
 
