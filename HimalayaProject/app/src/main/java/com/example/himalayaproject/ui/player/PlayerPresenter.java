@@ -17,6 +17,7 @@ import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl;
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayerException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode.PLAY_MODEL_LIST;
@@ -51,6 +52,7 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
     public static final String PLAY_MODE_SP_NAME = "PlayMod";
     public static final String PLAY_MODE_SP_KEY = "currentPlayMod";
     private XmPlayListControl.PlayMode mCurrentPlayModel = XmPlayListControl.PlayMode.PLAY_MODEL_LIST;
+    private boolean mIsReverse = false;
 
     private PlayerPresenter() {
         mPlayerManager = XmPlayerManager.getInstance(BaseApplication.getAppContext());
@@ -88,6 +90,7 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
     public void setPlayList(List<Track> list, int playIndex) {
         if (mPlayerManager != null) {
             mPlayerManager.setPlayList(list, playIndex);
+            isPlayListSet = true;
             mCurrentTrack = list.get(playIndex);
             mCurrentIndex = playIndex;
         } else {
@@ -97,7 +100,6 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
 
     @Override
     public void play() {
-        LogUtil.d(TAG, "isPlayListSet--> " + isPlayListSet);
         if (!isPlayListSet) {
             mPlayerManager.play();
         }
@@ -124,6 +126,10 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
         if (mPlayerManager != null) {
             mPlayerManager.playNext();
         }
+    }
+    //判断是否有播放列表的节目列表
+    public boolean havePlayList() {
+        return isPlayListSet;
     }
 
     @Override
@@ -203,9 +209,27 @@ public class PlayerPresenter implements IPlayerPresenter, IXmAdsStatusListener, 
     }
 
     @Override
-    public boolean isPlay() {
+    public boolean isPlaying() {
         //返回当前是否正在播放
         return mPlayerManager.isPlaying();
+    }
+
+    @Override
+    public void reversePlayList() {
+        //把播放列表翻转
+        List<Track> playList = mPlayerManager.getPlayList();
+        Collections.reverse(playList);
+        mIsReverse = !mIsReverse;
+        //第一个参数是播放列表，第二个参数是开始播放的下标
+        mCurrentIndex = playList.size() - 1 - mCurrentIndex;
+        mPlayerManager.setPlayList(playList, mCurrentIndex);
+        //更新UI
+        mCurrentTrack = (Track) mPlayerManager.getCurrSound();
+        for (IPlayerViewCallback iPlayerCallback : mIPlayerViewCallbacks) {
+            iPlayerCallback.onListLoaded(playList);
+            iPlayerCallback.onTrackUpdate(mCurrentTrack, mCurrentIndex);
+            iPlayerCallback.updateListOrder(mIsReverse);
+        }
     }
 
     @Override

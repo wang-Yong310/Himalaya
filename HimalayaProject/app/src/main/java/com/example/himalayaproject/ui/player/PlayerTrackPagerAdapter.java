@@ -60,4 +60,6 @@ public class PlayerTrackPagerAdapter extends PagerAdapter {
         mDate.addAll(list);
         notifyDataSetChanged();
     }
+
+
 }

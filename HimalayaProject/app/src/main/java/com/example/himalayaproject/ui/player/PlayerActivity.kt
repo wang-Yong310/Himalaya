@@ -1,10 +1,9 @@
 package com.example.himalayaproject.ui.player
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.SeekBar
 import androidx.viewpager.widget.ViewPager
 import com.example.himalayaproject.R
@@ -13,7 +12,6 @@ import com.example.himalayaproject.base.BasePageTransformer
 import com.example.himalayaproject.utils.LogUtil
 import com.example.himalayaproject.views.PopWindow
 import com.ximalaya.ting.android.opensdk.model.track.Track
-import com.ximalaya.ting.android.opensdk.player.XmPlayerManager
 import com.ximalaya.ting.android.opensdk.player.service.XmPlayListControl.PlayMode
 import kotlinx.android.synthetic.main.activity_player.*
 import java.text.SimpleDateFormat
@@ -51,6 +49,8 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
     private val playSingleLoop: PlayMode = PlayMode.PLAY_MODEL_SINGLE_LOOP
     private val sPlayModelRule = mapOf(playList to playListLoop, playListLoop to playListRandom, playListRandom to playSingleLoop, playSingleLoop to playList)
     private val mPopWindow: PopWindow = PopWindow()
+    var mEnterBgAnimator: ValueAnimator = ValueAnimator()
+    var mOutBgAnimation: ValueAnimator = ValueAnimator()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
@@ -62,8 +62,25 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
         mPlayerPresenter.getPlayList()
         initEvent()
         vp_pager_view.setPageTransformer(true, PlayerActivity())
+        initAnimation()
     }
 
+    private fun initAnimation() {
+        mEnterBgAnimator = ValueAnimator.ofFloat(1.0f, 0.7f)
+        mEnterBgAnimator.duration = 300
+        mEnterBgAnimator.addUpdateListener { animation ->
+            var value: Float = animation.animatedValue as Float
+            updateBgAlpha(value)
+        }
+        //退出的
+        mOutBgAnimation = ValueAnimator.ofFloat(0.7f, 1.0f)
+        mOutBgAnimation.duration = 300
+        mOutBgAnimation.addUpdateListener { animation ->
+            var value: Float = animation.animatedValue as Float
+            updateBgAlpha(value)
+            LogUtil.d(TAG, "animation->${animation.animatedValue}")
+        }
+    }
 
     /**
      * 给控件设置相关的事件
@@ -72,7 +89,7 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
     private fun initEvent() {
         iv_play_or_pause?.setOnClickListener {
             //如果现在的状态是正在播放的，那么就暂停
-            if (mPlayerPresenter.isPlay) {
+            if (mPlayerPresenter.isPlaying) {
                 mPlayerPresenter.pause()
             } else {
                 //如果是非播放的，那就让播放器播放
@@ -128,17 +145,56 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
         //设置iv_player_node_switch点击事件，播放模式的切换
         iv_player_node_switch.setOnClickListener {
             //根据当前的model获取到下一个model
-            val playMode = sPlayModelRule[mCurrentModel]
-            LogUtil.d(TAG, "playMode--> $playMode")
-            //修改播放模式
-            mPlayerPresenter.switchPlayMode(playMode)
-            updatePlayModeBtnImg()
+            switchPlayMode()
         }
         //设置播放列表的点击事件
         iv_play_list.setOnClickListener { view ->
-            LogUtil.d(TAG,"iv_play_list--> 点击了")
+            LogUtil.d(TAG, "iv_play_list--> 点击了")
+            //展示播放列表
             mPopWindow.showAtLocation(view, Gravity.BOTTOM, 0, 0)
+            //处理一下背景
+            mEnterBgAnimator.start()
         }
+
+        mPopWindow.setOnDismissListener {
+            //pop窗体消失以后恢复
+            /* updateBgAlpha(1.0f)
+             mEnterBgAnimator.start()*/
+            mOutBgAnimation.start()
+        }
+        //说明播放列表里的item被点击了
+        mPopWindow.setPlayListItemClickListener(object : PopWindow.PlayListItemClickListener {
+            override fun onItemClick(position: Int) {
+                mPlayerPresenter.playByIndex(position)
+            }
+        })
+        mPopWindow.setPlayListActionListener(object : PopWindow.PlayListActionListener {
+            override fun onPlayModelClick() {
+                switchPlayMode()
+            }
+            override fun onOrderClick() {
+                //点击了切换顺序和逆序
+                mPlayerPresenter.reversePlayList()
+
+            }
+        })
+    }
+
+    private fun switchPlayMode() {
+        val playMode = sPlayModelRule[mCurrentModel]
+        //修改播放模式
+        mPlayerPresenter.switchPlayMode(playMode)
+        updatePlayModeBtnImg()
+    }
+
+    /**
+     * 修改透明度方法
+     */
+    fun updateBgAlpha(alpha: Float) {
+        val window: Window = window
+        var attributes: WindowManager.LayoutParams = window.attributes
+        attributes.alpha = alpha
+        window.attributes = attributes
     }
 
     /**
@@ -180,6 +236,8 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
     override fun onPlayModeChange(playMode: PlayMode) {
         //更新模式并修UI
         mCurrentModel = playMode
+        //更新popWindow里的播放模式
+        mPopWindow.updatePlayMode(mCurrentModel)
         updatePlayModeBtnImg()
     }
 
@@ -218,6 +276,12 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
         //当节目改变时候，就获取当前播放器中播放位置
         //当前的节目修改以后要修改页面的图片
         this.vp_pager_view?.setCurrentItem(playIndex, true)
+        //设置播放列表当前位置,修改播放列表里的数据
+        mPopWindow.setCurrentPlayIndex(playIndex)
+    }
+
+    override fun updateListOrder(isReverse: Boolean) {
+        mPopWindow.updateOrderIcon(isReverse)
     }
 
 
@@ -226,10 +290,11 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
         super.onDestroy()
     }
 
-    override fun onListLoaded(list: List<Track?>?) {
-        LogUtil.d(TAG, "list --> $list")
+    override fun onListLoaded(list: List<Track>) {
         //把数据设置到适配器里
         mTrackPagerAdapter?.setData(list)
+        //数据回来以后也要给播放列表
+        mPopWindow.setListData(list)
     }
 
     /**
@@ -289,6 +354,8 @@ class PlayerActivity : BaseActivity(), IPlayerViewCallback, ViewPager.OnPageChan
 
 
 }
+
+
 
 
 

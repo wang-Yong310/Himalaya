@@ -8,5 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="main_color">#FA7254</color>
-    <color name="sub_text_title">#979797</color>
+    <color name="sub_text_title">#EcEEF0</color>
+    <color name="playlist_list_text_color">#7D828C</color>
 </resources>

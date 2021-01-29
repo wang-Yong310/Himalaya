@@ -69,9 +69,8 @@ dependencies {
     // SDK联网框架使用okhttp
     api 'com.squareup.okhttp3:okhttp:3.11.0'
     // SDK联网框架使用okhttp
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.1.60"
-    implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'
     apply plugin:'kotlin-android-extensions'
 }
 repositories {

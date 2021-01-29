@@ -47,7 +47,7 @@ interface IPlayerViewCallback {
      *
      * @param list
      */
-    fun onListLoaded(list: List<Track?>?)
+    fun onListLoaded(list: List<Track>)
 
     /**
      * 播放器模式改变
@@ -80,5 +80,8 @@ interface IPlayerViewCallback {
      */
     fun onTrackUpdate(track: Track?, playIndex: Int)
 
-
+    /**
+     * 通知UI更新播放列表的顺序文字和图片
+     */
+    fun updateListOrder(isReverse: Boolean)
 }
